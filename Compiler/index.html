@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Compiler</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         * {
@@ -65,7 +66,7 @@
             align-items: center;
         }
 
-        i{
+        i {
             font-size: 20px;
         }
 
@@ -89,6 +90,14 @@
 
         .buttons button:hover {
             background-color: #0056b3;
+        }
+
+        #clearOutputBtn {
+            display: flex;
+        }
+
+        #showConsoleBtn {
+            display: none;
         }
 
         .output-section {
@@ -135,11 +144,32 @@
             box-shadow: 0px 0px 2px #0002;
         }
 
+        textarea{
+            border: 1px solid #0002;
+        }
+
+        a{
+            display: flex;
+            align-items: center;
+            color: #333;
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column-reverse;
             }
-            
+
+            #clearOutputBtn {
+                display: none;
+            }
+
+            #showConsoleBtn {
+                display: flex;
+            }
+
+            .Navbar {
+                padding: 0px 5px;
+            }
 
             .editor-section,
             .output-section {
@@ -148,14 +178,18 @@
             }
 
             iframe {
-                height: 60%;
-                margin: 10px 10px 5px 10px;
+                /* height: 60%; */
+                height: 100%;
+                margin: 10px 10px 0px 10px;
             }
 
             #console {
-                height: 40%;
-                margin: 5px 10px 0px 10px;
+                /* height: 40%; */
+                height: 100%;
+                margin: 10px 10px 0px 10px;
+                display: none;
             }
+
         }
     </style>
 
@@ -164,34 +198,48 @@
 <body>
 
     <div class="container">
-        <!-- Left Editor -->
-        <div class="editor-section">
-            <div class="Navbar">
-                <div id="main_Title"><i class="fab fa-js"></i>&nbsp;JavaScript Code Editor</div>
-                <div class="buttons">
-                    <button onclick="runCode()">▶</button>
-                    <button onclick="clearOutput()">✕</button>
-                    <button onclick="saveCode()" title="Store in Browser.">Save</button>
-                </div>
+    <!-- Left Editor -->
+    <div class="editor-section">
+        <div class="Navbar">
+            <div id="main_Title"><i class="fab fa-js"></i>&nbsp;JavaScript Only</div>
+            <div class="buttons">
+                <button onclick="runCode()">Run</button>
+                <button onclick="clearOutput()" id="clearOutputBtn">Clear Output</button>
+                <button onclick="showConsole()" id="showConsoleBtn"></button>
+                <button onclick="saveCode()" title="Store in Browser.">Save</button>
             </div>
+        </div>
+        <textarea id="code" spellcheck="false">
+console.log("Welcome to JS compiler.")
+console.log("Bouncing Ball animation using pure js.")
+console.warn("Animation is nice.")
+console.error("An error for fun.")
 
-            <textarea id="code" spellcheck="false">let name = "Alice";
-document.write(`<h1>Hello ${name}</h1>`);
+const ball = document.createElement("div");
+Object.assign(ball.style, {
+  width: "40px", height: "40px", borderRadius: "50%",
+  background: "black", position: "absolute", left: "100px", top: "0"
+});
+document.body.appendChild(ball);
 
-document.write("Welcome, This is JavaScript Compiler.");
-
-console.log("Console log here.");
-console.warn("I am Warning.");
-console.error("I am Error.");
+let y = 0, dy = 2;
+function bounce() {
+  y += dy; dy += 0.2;
+  if (y > window.innerHeight - 40) dy = -dy * 0.9;
+  ball.style.top = y + "px";
+  requestAnimationFrame(bounce);
+}
+bounce();
 </textarea>
+        <a href="https://github.com/patelurvish0706/JavaScriptCompiler"><div style="text-shadow: 0px 0px 2px #0002 ;font-family: monospace;margin: 10px 0 -8px 0; display: flex; justify-content: center;">&copy Compiler by Urvish Patel.</a>&nbsp;<i class="fab fa-github"></i></div>
 
         </div>
-
         <!-- Right Output -->
         <div class="output-section">
             <iframe id="iframeOutput"></iframe>
             <div id="console"></div>
         </div>
+
     </div>
 
     <script>
@@ -264,7 +312,7 @@ console.error("I am Error.");
         // Manual save
         function saveCode() {
             sessionStorage.setItem("js-editor-code", codeArea.value);
-            alert("Code saved!");
+            alert("Code is saved in Session Storage. ✔️");
         }
 
         window.addEventListener("message", (event) => {
@@ -290,6 +338,32 @@ console.error("I am Error.");
 
     </script>
 
+    <script>
+        function showConsole() {
+            const iframe = document.getElementById("iframeOutput");
+            const consoleDiv = document.getElementById("console");
+            const toggleBtn = document.getElementById("showConsoleBtn");
+
+            if (iframe.style.display !== "none") {
+                // Show console, hide iframe
+                iframe.style.display = "none";
+                consoleDiv.style.display = "flex";
+                toggleBtn.innerText = "Code";
+            } else {
+                // Show iframe, hide console
+                iframe.style.display = "block";
+                consoleDiv.style.display = "none";
+                toggleBtn.innerText = "Console";
+            }
+        }
+
+        // Optional: Initial button text
+        document.getElementById("showConsoleBtn").textContent = "Console";
+    </script>
+
+    <script>
+        console.log("👾Javascript Compiler - Urvish Patel.")
+    </script>
 </body>
 
 </html>
