@@ -3,9 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Compiler</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
     <style>
         * {
             box-sizing: border-box;
@@ -142,6 +143,7 @@
             }
         }
     </style>
+
 </head>
 
 <body>
@@ -154,21 +156,11 @@
                 <div class="buttons">
                     <button onclick="runCode()">▶</button>
                     <button onclick="clearOutput()">✕</button>
+                    <button onclick="saveCode()" title="Store in Browser.">Save</button>
                 </div>
             </div>
 
-            <textarea id="code" spellcheck="false">
-// Example:
-
-alert("Welcome, This is JavaScript Compiler.");
-
-let name = "Alice";
-document.write(`<h1>Hello \${name}</h1>`);
-
-console.log("Logged to console");
-console.warn("warning is here");
-console.error("error is here");
-</textarea>
+            <textarea id="code" spellcheck="false"></textarea>
 
         </div>
 
@@ -178,6 +170,27 @@ console.error("error is here");
             <div id="console"></div>
         </div>
     </div>
+
+    <script>
+        const code = `document.write("Welcome, This is JavaScript Compiler.");
+
+                    let name = "Alice";
+                    document.write(\`<h1>Hello \${name}</h1>\`);
+
+                    console.log("Console log here.");
+                    console.warn("I am Warning.");
+                    console.error("I am Error.");
+                    `;
+
+        // Remove leading spaces from each line
+        const trimmedCode = code
+            .split("\n")
+            .map(line => line.trimStart())
+            .join("\n")
+            .trim(); // optional: remove top/bottom empty lines
+
+        document.getElementById("code").innerText = trimmedCode;
+    </script>
 
     <script>
         const codeArea = document.getElementById("code");
@@ -196,36 +209,39 @@ console.error("error is here");
             const userCode = codeArea.value;
             consoleDiv.innerHTML = ""; // Clear console
 
-            const iframeContent = `
-        <div id="app">
-    <script>
-      (function() {
-        const send = (type, msg) =>
-          window.parent.postMessage({ type, data: msg }, '*');
+            const escapedCode = userCode
+                .replace(/\\/g, '\\\\')         // escape backslashes first
+                .replace(/`/g, '\\`')           // escape backticks
+                .replace(/\$\{/g, '\\${');      // escape template literals
 
-        ["log", "error", "warn"].forEach(level => {
-          const original = console[level];
-          console[level] = function(...args) {
-            send("console", JSON.stringify({ level, message: args.join(" ") }));
-            original.apply(console, args);
-          };
-        });
-
-        // Global error fallback
-        window.onerror = function(message, source, lineno, colno, error) {
-          console.error("Uncaught Error: " + message + " at line " + lineno + ", column " + colno);
-        };
-
-        // Evaluate user code as string to catch syntax errors too
-        try {
-          eval(\`${userCode.replace(/`/g, '\\`')}\`);
-        } catch(e) {
-          console.error("Caught Error: " + e.message);
-        }
-      })();
-    <\/script>
-  <\/div>
-      `;
+            const iframeContent = `<div id="app">
+                                    <script>
+                                        (function() {
+                                            const send = (type, msg) =>
+                                            window.parent.postMessage({ type, data: msg }, '*');
+                                        
+                                            ["log", "error", "warn"].forEach(level => {
+                                                const original = console[level];
+                                                console[level] = function(...args) {
+                                                    send("console", JSON.stringify({ level, message: args.join(" ") }));
+                                                    original.apply(console, args);
+                                                };
+                                            });
+                                        
+                                            // Global error fallback
+                                            window.onerror = function(message, source, lineno, colno, error) {
+                                                console.error("Uncaught Error: " + message + " at line " + lineno + ", column " + colno);
+                                            };
+                                        
+                                            // Evaluate user code
+                                            try {
+                                                eval(\`${escapedCode}\`);
+                                            } catch(e) {
+                                                console.error("Caught Error: " + e.message);
+                                            }
+                                        })();
+                                    <\/script>
+                                    <\/div>`;
 
             iframe.srcdoc = iframeContent;
         }
@@ -233,6 +249,20 @@ console.error("error is here");
         function clearOutput() {
             consoleDiv.innerHTML = "";
             iframe.srcdoc = `<div id="app"></div>`;
+        }
+
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedCode = sessionStorage.getItem("js-editor-code");
+            if (savedCode) {
+                codeArea.value = savedCode;
+            }
+            runCode();
+        });
+
+        // Manual save
+        function saveCode() {
+            sessionStorage.setItem("js-editor-code", codeArea.value);
+            alert("Code saved!");
         }
 
         window.addEventListener("message", (event) => {
@@ -255,7 +285,7 @@ console.error("error is here");
         });
 
         runCode();
-        
+
     </script>
 
 </body>
