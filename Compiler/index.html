@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JavaScript Compiler</title>
-    <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔥</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -23,7 +23,7 @@
 
         .container {
             display: flex;
-            height: 100vh;
+            height: 100dvh;
             overflow: hidden;
         }
 
@@ -63,6 +63,10 @@
             text-shadow: 0px 0px 5px #0002;
             display: flex;
             align-items: center;
+        }
+
+        i{
+            font-size: 20px;
         }
 
         .buttons {
@@ -123,10 +127,19 @@
             margin: 10px;
         }
 
+        textarea,
+        iframe,
+        #console {
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0px 0px 2px #0002;
+        }
+
         @media (max-width: 768px) {
             .container {
-                flex-direction: column;
+                flex-direction: column-reverse;
             }
+            
 
             .editor-section,
             .output-section {
@@ -135,11 +148,13 @@
             }
 
             iframe {
-                height: 50%;
+                height: 60%;
+                margin: 10px 10px 5px 10px;
             }
 
             #console {
-                height: 50%;
+                height: 40%;
+                margin: 5px 10px 0px 10px;
             }
         }
     </style>
@@ -152,7 +167,7 @@
         <!-- Left Editor -->
         <div class="editor-section">
             <div class="Navbar">
-                <div id="main_Title">🤖 JavaScript Code Editor</div>
+                <div id="main_Title"><i class="fab fa-js"></i>&nbsp;JavaScript Code Editor</div>
                 <div class="buttons">
                     <button onclick="runCode()">▶</button>
                     <button onclick="clearOutput()">✕</button>
@@ -160,7 +175,15 @@
                 </div>
             </div>
 
-            <textarea id="code" spellcheck="false"></textarea>
+            <textarea id="code" spellcheck="false">let name = "Alice";
+document.write(`<h1>Hello ${name}</h1>`);
+
+document.write("Welcome, This is JavaScript Compiler.");
+
+console.log("Console log here.");
+console.warn("I am Warning.");
+console.error("I am Error.");
+</textarea>
 
         </div>
 
@@ -170,27 +193,6 @@
             <div id="console"></div>
         </div>
     </div>
-
-    <script>
-        const code = `document.write("Welcome, This is JavaScript Compiler.");
-
-                    let name = "Alice";
-                    document.write(\`<h1>Hello \${name}</h1>\`);
-
-                    console.log("Console log here.");
-                    console.warn("I am Warning.");
-                    console.error("I am Error.");
-                    `;
-
-        // Remove leading spaces from each line
-        const trimmedCode = code
-            .split("\n")
-            .map(line => line.trimStart())
-            .join("\n")
-            .trim(); // optional: remove top/bottom empty lines
-
-        document.getElementById("code").innerText = trimmedCode;
-    </script>
 
     <script>
         const codeArea = document.getElementById("code");
